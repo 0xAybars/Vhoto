@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hat Vhoto</title>
+    <style>
+        :root {
+            --primary-color: #6ee7b7;      /* Soft green */
+            --secondary-color: #34d399;    /* Medium green */
+            --background-color: #0f172a;   /* Deep blue-gray for contrast */
+            --card-background: #183c32;    /* Muted greenish card */
+            --text-color: #e6f9f2;         /* Very light greenish */
+            --text-secondary: #a7f3d0;     /* Muted soft green */
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #183c32 0%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-color);
+        }
+        .container {
+            background: var(--card-background);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            color: var(--text-color);
+        }
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .file-input-wrapper {
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: #183c32;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .file-input-wrapper:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 211, 153, 0.25);
+        }
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+        .editor-section {
+            display: none;
+            text-align: center;
+        }
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+            margin: 20px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            background: #1a2e26;
+        }
+        #photoCanvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            background: #1a2e26;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #1a2e26;
+            border-radius: 15px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .control-group label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: #2e4d3c;
+            border-radius: 5px;
+            outline: none;
+            width: 120px;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #2e4d3c;
+        }
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #2e4d3c;
+        }
+        .btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: #183c32;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin: 0 10px;
+            box-shadow: 0 2px 8px rgba(52, 211, 153, 0.15);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(52, 211, 153, 0.25);
+        }
+        .btn-secondary {
+            background: linear-gradient(45deg, #bbf7d0, #6ee7b7);
+            color: #183c32;
+        }
+        .btn-secondary:hover {
+            box-shadow: 0 8px 16px rgba(110, 231, 183, 0.2);
+        }
+        .instructions {
+            background: #1a2e26;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(52, 211, 153, 0.08);
+        }
+        .save-instructions {
+            margin-top: 15px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .controls {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .control-group {
+                width: 100%;
+            }
+            .slider {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><img src="hat.png" alt="hat" style="height: 1em; vertical-align: middle;"> V Hat Photo Editor</h1>
+        
+        <div class="upload-section">
+            <div class="instructions">
+                Upload your photo and add a stylish v hat! You can drag, resize, and rotate the hat to get the perfect look.
+            </div>
+            <label for="photoUpload" class="file-input-wrapper">
+                📸 Choose Your Photo
+                <input type="file" id="photoUpload" accept="image/*">
+            </label>
+        </div>
+
+        <div class="editor-section" id="editorSection">
+            <div class="canvas-container">
+                <canvas id="photoCanvas"></canvas>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label>Hat Size</label>
+                    <input type="range" id="sizeSlider" class="slider" min="50" max="300" value="150">
+                </div>
+                
+                <div class="control-group">
+                    <label>Rotation</label>
+                    <input type="range" id="rotationSlider" class="slider" min="0" max="360" value="0">
+                </div>
+                
+                <div class="control-group">
+                    <label>Opacity</label>
+                    <input type="range" id="opacitySlider" class="slider" min="0" max="100" value="100">
+                </div>
+            </div>
+            
+            <div class="save-instructions">
+                To save your photo, right-click on the image and select "Save Image As"
+            </div>
+            <br>
+            <div>
+                <button class="btn btn-secondary" id="resetBtn">🔄 Upload New Photo</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Created by <a href="https://twitter.com/0xAybars" target="_blank">@0xAybars</a> with ❤️ by for the Virtuals Community
+        </div>
+    </div>
+
+    <script>
+        class HatPhotoEditor {
+            constructor() {
+                this.canvas = document.getElementById('photoCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.photo = null;
+                this.hatImage = null;
+                this.hatPosition = { x: 0, y: 0 };
+                this.hatSize = 150;
+                this.hatRotation = 0;
+                this.hatOpacity = 1;
+                this.isDragging = false;
+                this.dragOffset = { x: 0, y: 0 };
+                
+                this.initializeHat();
+                this.bindEvents();
+            }
+
+            async initializeHat() {
+                this.hatImage = new Image();
+                this.hatImage.onload = () => {
+                    if (this.photo) {
+                        this.redraw();
+                    }
+                };
+                
+                // Try to load hat.png from the same directory as the HTML file
+                this.hatImage.onerror = () => {
+                    // Fallback to a simple SVG hat if hat.png is not found
+                    this.hatImage.onerror = null; // Prevent infinite loop
+                    this.hatImage.src = "data:image/svg+xml;base64," + btoa(`
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+                            <ellipse cx="200" cy="180" rx="120" ry="40" fill="#222"/>
+                            <ellipse cx="200" cy="140" rx="70" ry="50" fill="#444"/>
+                            <rect x="130" y="120" width="140" height="40" rx="20" fill="#333"/>
+                        </svg>
+                    `);
+                };
+                this.hatImage.src = "hat.png";
+            }
+
+            bindEvents() {
+                document.getElementById('photoUpload').addEventListener('change', (e) => this.handlePhotoUpload(e));
+                document.getElementById('sizeSlider').addEventListener('input', (e) => this.updateHatSize(e.target.value));
+                document.getElementById('rotationSlider').addEventListener('input', (e) => this.updateHatRotation(e.target.value));
+                document.getElementById('opacitySlider').addEventListener('input', (e) => this.updateHatOpacity(e.target.value));
+                document.getElementById('resetBtn').addEventListener('click', () => this.reset());
+
+                // Mouse events for dragging
+                this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.canvas.addEventListener('mouseup', () => this.handleMouseUp());
+                
+                // Touch events for mobile
+                this.canvas.addEventListener('touchstart', (e) => this.handleTouchStart(e));
+                this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e));
+                this.canvas.addEventListener('touchend', () => this.handleTouchEnd());
+            }
+
+            handlePhotoUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.photo = new Image();
+                    this.photo.onload = () => {
+                        this.setupCanvas();
+                        this.redraw();
+                        document.getElementById('editorSection').style.display = 'block';
+                    };
+                    this.photo.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            setupCanvas() {
+                const maxWidth = 800;
+                const maxHeight = 600;
+                
+                let { width, height } = this.photo;
+                
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+                
+                if (height > maxHeight) {
+                    width = (width * maxHeight) / height;
+                    height = maxHeight;
+                }
+
+                this.canvas.width = width;
+                this.canvas.height = height;
+                
+                // Initialize hat position to center-top
+                this.hatPosition = {
+                    x: width / 2,
+                    y: height / 4
+                };
+            }
+
+            getMousePos(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = this.canvas.width / rect.width;
+                const scaleY = this.canvas.height / rect.height;
+                
+                return {
+                    x: (e.clientX - rect.left) * scaleX,
+                    y: (e.clientY - rect.top) * scaleY
+                };
+            }
+
+            getTouchPos(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = this.canvas.width / rect.width;
+                const scaleY = this.canvas.height / rect.height;
+                
+                return {
+                    x: (e.touches[0].clientX - rect.left) * scaleX,
+                    y: (e.touches[0].clientY - rect.top) * scaleY
+                };
+            }
+
+            isPointInHat(x, y) {
+                const hatX = this.hatPosition.x - this.hatSize / 2;
+                const hatY = this.hatPosition.y - this.hatSize / 2;
+                
+                return x >= hatX && x <= hatX + this.hatSize && 
+                       y >= hatY && y <= hatY + this.hatSize;
+            }
+
+            handleMouseDown(e) {
+                const pos = this.getMousePos(e);
+                if (this.isPointInHat(pos.x, pos.y)) {
+                    this.isDragging = true;
+                    this.dragOffset = {
+                        x: pos.x - this.hatPosition.x,
+                        y: pos.y - this.hatPosition.y
+                    };
+                    this.canvas.style.cursor = 'grabbing';
+                }
+            }
+
+            handleMouseMove(e) {
+                const pos = this.getMousePos(e);
+                
+                if (this.isDragging) {
+                    this.hatPosition = {
+                        x: pos.x - this.dragOffset.x,
+                        y: pos.y - this.dragOffset.y
+                    };
+                    this.redraw();
+                } else {
+                    this.canvas.style.cursor = this.isPointInHat(pos.x, pos.y) ? 'grab' : 'default';
+                }
+            }
+
+            handleMouseUp() {
+                this.isDragging = false;
+                this.canvas.style.cursor = 'default';
+            }
+
+            handleTouchStart(e) {
+                e.preventDefault();
+                const pos = this.getTouchPos(e);
+                if (this.isPointInHat(pos.x, pos.y)) {
+                    this.isDragging = true;
+                    this.dragOffset = {
+                        x: pos.x - this.hatPosition.x,
+                        y: pos.y - this.hatPosition.y
+                    };
+                }
+            }
+
+            handleTouchMove(e) {
+                e.preventDefault();
+                if (this.isDragging) {
+                    const pos = this.getTouchPos(e);
+                    this.hatPosition = {
+                        x: pos.x - this.dragOffset.x,
+                        y: pos.y - this.dragOffset.y
+                    };
+                    this.redraw();
+                }
+            }
+
+            handleTouchEnd() {
+                this.isDragging = false;
+            }
+
+            updateHatSize(value) {
+                this.hatSize = parseInt(value);
+                this.redraw();
+            }
+
+            updateHatRotation(value) {
+                this.hatRotation = parseInt(value);
+                this.redraw();
+            }
+
+            updateHatOpacity(value) {
+                this.hatOpacity = value / 100;
+                this.redraw();
+            }
+
+            redraw() {
+                if (!this.photo || !this.hatImage) return;
+
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw photo
+                this.ctx.drawImage(this.photo, 0, 0, this.canvas.width, this.canvas.height);
+                
+                // Save context for hat transformations
+                this.ctx.save();
+                
+                // Set hat opacity
+                this.ctx.globalAlpha = this.hatOpacity;
+                
+                // Move to hat position
+                this.ctx.translate(this.hatPosition.x, this.hatPosition.y);
+                
+                // Rotate if needed
+                if (this.hatRotation !== 0) {
+                    this.ctx.rotate((this.hatRotation * Math.PI) / 180);
+                }
+                
+                // Draw hat centered on position
+                this.ctx.drawImage(
+                    this.hatImage,
+                    -this.hatSize / 2,
+                    -this.hatSize / 2,
+                    this.hatSize,
+                    this.hatSize
+                );
+                
+                // Restore context
+                this.ctx.restore();
+            }
+
+            reset() {
+                document.getElementById('editorSection').style.display = 'none';
+                document.getElementById('photoUpload').value = '';
+                
+                // Reset sliders
+                document.getElementById('sizeSlider').value = 150;
+                document.getElementById('rotationSlider').value = 0;
+                document.getElementById('opacitySlider').value = 100;
+                
+                // Reset values
+                this.hatSize = 150;
+                this.hatRotation = 0;
+                this.hatOpacity = 1;
+                this.photo = null;
+            }
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new HatPhotoEditor();
+        });
+    </script>
+</body>
+</html>
