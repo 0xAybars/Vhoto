@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hat Vhoto</title>
+    <title>Cap Vhoto</title>
     <style>
         :root {
             --primary-color: #6ee7b7;      /* Soft green */
@@ -264,36 +264,36 @@
     </div>
 
     <script>
-        class HatPhotoEditor {
+        class CapPhotoEditor {
             constructor() {
                 this.canvas = document.getElementById('photoCanvas');
                 this.ctx = this.canvas.getContext('2d');
                 this.photo = null;
-                this.hatImage = null;
-                this.hatPosition = { x: 0, y: 0 };
-                this.hatSize = 150;
-                this.hatRotation = 0;
-                this.hatOpacity = 1;
+                this.capImage = null;
+                this.capPosition = { x: 0, y: 0 };
+                this.capSize = 150;
+                this.capRotation = 0;
+                this.capOpacity = 1;
                 this.isDragging = false;
                 this.dragOffset = { x: 0, y: 0 };
                 
-                this.initializeHat();
+                this.initializeCap();
                 this.bindEvents();
             }
 
-            async initializeHat() {
-                this.hatImage = new Image();
-                this.hatImage.onload = () => {
+            async initializeCap() {
+                this.capImage = new Image();
+                this.capImage.onload = () => {
                     if (this.photo) {
                         this.redraw();
                     }
                 };
                 
-                // Try to load hat.png from the same directory as the HTML file
-                this.hatImage.onerror = () => {
-                    // Fallback to a simple SVG hat if hat.png is not found
-                    this.hatImage.onerror = null; // Prevent infinite loop
-                    this.hatImage.src = "data:image/svg+xml;base64," + btoa(`
+                // Try to load cap.png from the same directory as the HTML file
+                this.capImage.onerror = () => {
+                    // Fallback to a simple SVG cap if cap.png is not found
+                    this.capImage.onerror = null; // Prevent infinite loop
+                    this.capImage.src = "data:image/svg+xml;base64," + btoa(`
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
                             <ellipse cx="200" cy="180" rx="120" ry="40" fill="#222"/>
                             <ellipse cx="200" cy="140" rx="70" ry="50" fill="#444"/>
@@ -301,14 +301,14 @@
                         </svg>
                     `);
                 };
-                this.hatImage.src = "hat.png";
+                this.capImage.src = "cap.png";
             }
 
             bindEvents() {
                 document.getElementById('photoUpload').addEventListener('change', (e) => this.handlePhotoUpload(e));
-                document.getElementById('sizeSlider').addEventListener('input', (e) => this.updateHatSize(e.target.value));
-                document.getElementById('rotationSlider').addEventListener('input', (e) => this.updateHatRotation(e.target.value));
-                document.getElementById('opacitySlider').addEventListener('input', (e) => this.updateHatOpacity(e.target.value));
+                document.getElementById('sizeSlider').addEventListener('input', (e) => this.updateCapSize(e.target.value));
+                document.getElementById('rotationSlider').addEventListener('input', (e) => this.updateCapRotation(e.target.value));
+                document.getElementById('opacitySlider').addEventListener('input', (e) => this.updateCapOpacity(e.target.value));
                 document.getElementById('resetBtn').addEventListener('click', () => this.reset());
 
                 // Mouse events for dragging
@@ -358,8 +358,8 @@
                 this.canvas.width = width;
                 this.canvas.height = height;
                 
-                // Initialize hat position to center-top
-                this.hatPosition = {
+                // Initialize cap position to center-top
+                this.capPosition = {
                     x: width / 2,
                     y: height / 4
                 };
@@ -387,21 +387,21 @@
                 };
             }
 
-            isPointInHat(x, y) {
-                const hatX = this.hatPosition.x - this.hatSize / 2;
-                const hatY = this.hatPosition.y - this.hatSize / 2;
+            isPointInCap(x, y) {
+                const capX = this.capPosition.x - this.capSize / 2;
+                const capY = this.capPosition.y - this.capSize / 2;
                 
-                return x >= hatX && x <= hatX + this.hatSize && 
-                       y >= hatY && y <= hatY + this.hatSize;
+                return x >= capX && x <= capX + this.capSize && 
+                       y >= capY && y <= capY + this.capSize;
             }
 
             handleMouseDown(e) {
                 const pos = this.getMousePos(e);
-                if (this.isPointInHat(pos.x, pos.y)) {
+                if (this.isPointInCap(pos.x, pos.y)) {
                     this.isDragging = true;
                     this.dragOffset = {
-                        x: pos.x - this.hatPosition.x,
-                        y: pos.y - this.hatPosition.y
+                        x: pos.x - this.capPosition.x,
+                        y: pos.y - this.capPosition.y
                     };
                     this.canvas.style.cursor = 'grabbing';
                 }
@@ -411,13 +411,13 @@
                 const pos = this.getMousePos(e);
                 
                 if (this.isDragging) {
-                    this.hatPosition = {
+                    this.capPosition = {
                         x: pos.x - this.dragOffset.x,
                         y: pos.y - this.dragOffset.y
                     };
                     this.redraw();
                 } else {
-                    this.canvas.style.cursor = this.isPointInHat(pos.x, pos.y) ? 'grab' : 'default';
+                    this.canvas.style.cursor = this.isPointInCap(pos.x, pos.y) ? 'grab' : 'default';
                 }
             }
 
@@ -429,11 +429,11 @@
             handleTouchStart(e) {
                 e.preventDefault();
                 const pos = this.getTouchPos(e);
-                if (this.isPointInHat(pos.x, pos.y)) {
+                if (this.isPointInCap(pos.x, pos.y)) {
                     this.isDragging = true;
                     this.dragOffset = {
-                        x: pos.x - this.hatPosition.x,
-                        y: pos.y - this.hatPosition.y
+                        x: pos.x - this.capPosition.x,
+                        y: pos.y - this.capPosition.y
                     };
                 }
             }
@@ -442,7 +442,7 @@
                 e.preventDefault();
                 if (this.isDragging) {
                     const pos = this.getTouchPos(e);
-                    this.hatPosition = {
+                    this.capPosition = {
                         x: pos.x - this.dragOffset.x,
                         y: pos.y - this.dragOffset.y
                     };
@@ -454,50 +454,50 @@
                 this.isDragging = false;
             }
 
-            updateHatSize(value) {
-                this.hatSize = parseInt(value);
+            updateCapSize(value) {
+                this.capSize = parseInt(value);
                 this.redraw();
             }
 
-            updateHatRotation(value) {
-                this.hatRotation = parseInt(value);
+            updateCapRotation(value) {
+                this.capRotation = parseInt(value);
                 this.redraw();
             }
 
-            updateHatOpacity(value) {
-                this.hatOpacity = value / 100;
+            updateCapOpacity(value) {
+                this.capOpacity = value / 100;
                 this.redraw();
             }
 
             redraw() {
-                if (!this.photo || !this.hatImage) return;
+                if (!this.photo || !this.capImage) return;
 
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 
                 // Draw photo
                 this.ctx.drawImage(this.photo, 0, 0, this.canvas.width, this.canvas.height);
                 
-                // Save context for hat transformations
+                // Save context for cap transformations
                 this.ctx.save();
                 
-                // Set hat opacity
-                this.ctx.globalAlpha = this.hatOpacity;
+                // Set cap opacity
+                this.ctx.globalAlpha = this.capOpacity;
                 
-                // Move to hat position
-                this.ctx.translate(this.hatPosition.x, this.hatPosition.y);
+                // Move to cap position
+                this.ctx.translate(this.capPosition.x, this.capPosition.y);
                 
                 // Rotate if needed
-                if (this.hatRotation !== 0) {
-                    this.ctx.rotate((this.hatRotation * Math.PI) / 180);
+                if (this.capRotation !== 0) {
+                    this.ctx.rotate((this.capRotation * Math.PI) / 180);
                 }
                 
-                // Draw hat centered on position
+                // Draw cap centered on position
                 this.ctx.drawImage(
-                    this.hatImage,
-                    -this.hatSize / 2,
-                    -this.hatSize / 2,
-                    this.hatSize,
-                    this.hatSize
+                    this.capImage,
+                    -this.capSize / 2,
+                    -this.capSize / 2,
+                    this.capSize,
+                    this.capSize
                 );
                 
                 // Restore context
@@ -514,16 +514,16 @@
                 document.getElementById('opacitySlider').value = 100;
                 
                 // Reset values
-                this.hatSize = 150;
-                this.hatRotation = 0;
-                this.hatOpacity = 1;
+                this.capSize = 150;
+                this.capRotation = 0;
+                this.capOpacity = 1;
                 this.photo = null;
             }
         }
 
         // Initialize the app when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            new HatPhotoEditor();
+            new CapPhotoEditor();
         });
     </script>
 </body>
